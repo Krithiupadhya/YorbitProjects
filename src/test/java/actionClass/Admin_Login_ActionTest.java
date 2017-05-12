@@ -36,6 +36,7 @@ public class Admin_Login_ActionTest extends StrutsTestCase {
         request.setParameter("chpw.newpw", "passnew");
         request.setParameter("chpw.cnewpw", "passnew");
         request.setParameter("chpw.bank_id", "bankid1");
+        request.setParameter("chpw.test", "good");
         
         ActionProxy proxy = getActionProxy("/admchangepw");
         Admin_Login_Action action = (Admin_Login_Action) proxy.getAction();
@@ -44,7 +45,6 @@ public class Admin_Login_ActionTest extends StrutsTestCase {
         action.setLoginDAO(loginDAO);
         
         Admin_Login actionForm= action.getLogin();
-        actionForm.setTest("good");
         
         Mockito.when(xyz.changepw(action.getChpw())).thenReturn(actionForm);
         
@@ -80,45 +80,16 @@ public class Admin_Login_ActionTest extends StrutsTestCase {
         assertTrue(actionMsgs.contains("Please Enter All Values")); 
 	}
 
-	public void testIncorrectOldChangepw() throws Exception {
-		request.setParameter("chpw.oldpw", "test1");
-        request.setParameter("chpw.newpw", "test2");
-        request.setParameter("chpw.cnewpw", "test2");
-        request.setParameter("chpw.bank_id", "bankid1");
-        
-        ActionProxy proxy = getActionProxy("/admchangepw");
-        Admin_Login_Action action = (Admin_Login_Action) proxy.getAction();
-        action.setXyz(xyz);
-        action.setSession(session);
-        action.setLoginDAO(loginDAO);
-        
-
-        Admin_Login actionForm= action.getLogin();
-        actionForm.setTest("not");
-        
-        Mockito.when(xyz.changepw(action.getChpw())).thenReturn(action.getChpw());
-        
-        String result = proxy.execute();
- 
-        assertEquals("error", result);
-        
-        Collection<String> actionMsgs = action.getActionErrors();
-        assertTrue(actionMsgs.size()== 1);  
-        assertTrue(actionMsgs.contains("Old Password not matching")); 
-	}
-
 	public void testLogout() throws Exception {
 		session.put("user", "admin");
 		session.put("user0", "user0");
 		session.put("user1", "user1");
-		
-		Mockito.when(ActionContext.getContext().getSession()).thenReturn(session);
-		
+		ActionContext.getContext().setSession(session);
 		ActionProxy proxy = getActionProxy("/logout");
 		String result = proxy.execute();
 		 
         assertEquals("success", result);
-        assertEquals(session.size(), 0);
+        assertEquals(ActionContext.getContext().getSession().size(), 0);
 		
 	}
 
