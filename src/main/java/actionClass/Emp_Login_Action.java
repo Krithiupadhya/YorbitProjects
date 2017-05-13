@@ -2,19 +2,20 @@ package actionClass;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.struts2.interceptor.SessionAware;
-
-import actionForm.Emp_Login;
-import daoImpl.Emp_Login_DaoImpl;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 
-public class Emp_Login_Action extends ActionSupport implements
-		ModelDriven<Object>, SessionAware {
+import actionForm.Emp_Login;
+import daoImpl.Emp_Login_DaoImpl;
+
+public class Emp_Login_Action extends ActionSupport implements ModelDriven<Object>, SessionAware {
 
 	private static final long serialVersionUID = -6898596256321736746L;
+	private static Logger logger = Logger.getLogger(Emp_Login_Action.class);
 	private Map<String, Object> session;
 	private Emp_Login login = null;
 	private Emp_Login_DaoImpl loginDAO = new Emp_Login_DaoImpl();
@@ -33,8 +34,7 @@ public class Emp_Login_Action extends ActionSupport implements
 	 */
 	public String checkLogin() {
 
-		if (login.getUserName().equals("") || login.getPassword().equals("")
-				|| login.getBank_id().equals("")) {
+		if (login.getUserName().equals("") || login.getPassword().equals("") || login.getBank_id().equals("")) {
 			addActionError("Please Enter All Values");
 
 			return ERROR;
@@ -45,10 +45,8 @@ public class Emp_Login_Action extends ActionSupport implements
 
 			if (null != login.getBank_id()) {
 
-				String abcd = login.getUserName();
-				String uname =login.getUserName();
+				String uname = login.getUserName();
 				String other = login.getBank_id();
-				System.out.println(abcd);
 
 				session.put("user", "emp");
 				session.put("user0", uname);
@@ -77,39 +75,32 @@ public class Emp_Login_Action extends ActionSupport implements
 		String a = chpw.getOldpw();
 		String b = chpw.getNewpw();
 		String c = chpw.getCnewpw();
-		if(a.equals("") || b.equals("") ||c.equals(""))
-		{
+		if (a.equals("") || b.equals("") || c.equals("")) {
 			addActionError("Please Enter All Values");
 			return ERROR;
-		}
-		else
-		{
-		System.out.println(a);
-		System.out.println(b);
-		System.out.println(c);
-
-		if (b.equals(c)) {
-
-			xyz.changepw(chpw);
-
-			String ss = chpw.getTest();
-
-			System.out.println("From Action Class:  " + ss);
-			if (chpw.getTest() == "not") {
-				addActionError("Old Password not matching ");
-				return ERROR;
-
-			}
-			if (chpw.getTest() == "good") {
-				addActionMessage("Password changed Successfully. Account will be Logout");
-			}
-
 		} else {
-			addActionError("Password not matching");
-			return ERROR;
+			if (b.equals(c)) {
+
+				xyz.changepw(chpw);
+
+				String ss = chpw.getTest();
+
+				logger.debug("From Action Class:  " + ss);
+				if (chpw.getTest() == "not") {
+					addActionError("Old Password not matching ");
+					return ERROR;
+
+				}
+				if (chpw.getTest() == "good") {
+					addActionMessage("Password changed Successfully. Account will be Logout");
+				}
+
+			} else {
+				addActionError("Password not matching");
+				return ERROR;
+			}
+			return SUCCESS;
 		}
-		return SUCCESS;
-	}
 	}
 
 	public String logout() throws Exception {

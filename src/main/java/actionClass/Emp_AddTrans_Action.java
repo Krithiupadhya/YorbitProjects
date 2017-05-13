@@ -3,11 +3,12 @@ package actionClass;
 
 
  
-import daoImpl.Emp_AddTrans_DaoImpl;
-import actionForm.Emp_AddTrans;
 import java.util.List;
- 
+
 import com.opensymphony.xwork2.ActionSupport;
+
+import actionForm.Emp_AddTrans;
+import daoImpl.Emp_AddTrans_DaoImpl;
  
  
 public class Emp_AddTrans_Action extends ActionSupport {
@@ -19,10 +20,6 @@ public class Emp_AddTrans_Action extends ActionSupport {
 	private Emp_AddTrans views;
 	private Emp_AddTrans_DaoImpl xyz =new Emp_AddTrans_DaoImpl();
 	private List<Emp_AddTrans> detailList;
-	
-  
-
-
 
 
 	public String deposit() 

@@ -1,7 +1,9 @@
 package daoImpl;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.classic.Session;
+
 import actionForm.Admin_AddEmp;
 import actionForm.Emp_Login;
 import util.HibernateUtil;
@@ -12,6 +14,11 @@ import util.HibernateUtil;
  */
 public class Admin_AddEmp_DaoImpl extends HibernateUtil {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6421383781999253906L;
+	private static Logger logger= Logger.getLogger(Admin_AddEmp_DaoImpl.class);
 	/**
 	 * @param addEmp
 	 *            Admin Add Employee
@@ -25,8 +32,7 @@ public class Admin_AddEmp_DaoImpl extends HibernateUtil {
 		try {
 			session.save(addEmp);
 		} catch (HibernateException e) {
-
-			e.printStackTrace();
+			logger.error("Error while adding employee"+e);
 			session.getTransaction().rollback();
 		}
 		session.getTransaction().commit();
@@ -56,8 +62,7 @@ public class Admin_AddEmp_DaoImpl extends HibernateUtil {
 			
 			session.save(abcd);
 		} catch (HibernateException e) {
-			System.out.println(e.getMessage());
-			//e.printStackTrace();
+			logger.error("Error while adding employee"+e);
 			session.getTransaction().rollback();
 		}
 		session.getTransaction().commit();

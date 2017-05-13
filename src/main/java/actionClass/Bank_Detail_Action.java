@@ -1,10 +1,11 @@
 package actionClass;
 
 import java.util.List;
+
 import com.opensymphony.xwork2.ActionSupport;
 
-import daoImpl.Bank_Detail_DaoImpl;
 import actionForm.Bank_Detail;
+import daoImpl.Bank_Detail_DaoImpl;
 
 /**
  * @author VS60001724

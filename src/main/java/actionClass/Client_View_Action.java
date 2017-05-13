@@ -1,10 +1,11 @@
 package actionClass;
 
+import java.util.List;
+
 import com.opensymphony.xwork2.ActionSupport;
 
-import daoImpl.Client_View_DaoImpl;
 import actionForm.Client_View;
-import java.util.List;
+import daoImpl.Client_View_DaoImpl;
 
 public class Client_View_Action extends ActionSupport {
 

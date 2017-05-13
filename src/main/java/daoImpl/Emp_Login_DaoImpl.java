@@ -3,27 +3,30 @@ package daoImpl;
 import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
-
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.struts2.interceptor.SessionAware;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.classic.Session;
-import org.hibernate.*;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ModelDriven;
 
-import actionForm.Emp_LoginMan;
 import actionForm.Emp_Login;
+import actionForm.Emp_LoginMan;
 import util.HibernateUtil;
 
 /**
  * @author VS60001724
  * 
  */
-public class Emp_Login_DaoImpl extends HibernateUtil implements
-		ModelDriven<Object>, SessionAware {
+public class Emp_Login_DaoImpl extends HibernateUtil implements ModelDriven<Object>, SessionAware {
 
+	private static final long serialVersionUID = -3117746801600425314L;
+	private static Logger logger = Logger.getLogger(Emp_Login_DaoImpl.class);
+	
 	private Map<String, Object> usersession;
 
 	/**
@@ -45,20 +48,20 @@ public class Emp_Login_DaoImpl extends HibernateUtil implements
 		userName = login.getUserName();
 		password = login.getPassword();
 		bank_id = login.getBank_id();
-		password =md5(password);
-		String SQL_QUERY = "SELECT login FROM Emp_Login login WHERE login.userName = '"
-				+ userName
-				+ "' AND login.password = '"
-				+ password
-				+ "' AND login.bank_id = '" + bank_id + "'";
+		password = md5(password);
+		String SQL_QUERY = "SELECT login FROM Emp_Login login WHERE login.userName = :userName"
+				+ " AND login.password = :password" + " AND login.bank_id = '" + bank_id + "'";
 
 		try {
 
-			System.out.println(SQL_QUERY);
+			logger.debug(SQL_QUERY);
 
 			session.beginTransaction();
 
 			Query query = session.createQuery(SQL_QUERY);
+			query.setParameter("userName", userName);
+			query.setParameter("password", password);
+			query.setParameter("bank_id", bank_id);
 
 			@SuppressWarnings("rawtypes")
 			Iterator it = query.iterate();
@@ -68,7 +71,6 @@ public class Emp_Login_DaoImpl extends HibernateUtil implements
 				login = (Emp_Login) it.next();
 				Emp_LoginMan rr = new Emp_LoginMan();
 				rr.setBank_id(bank_id);
-				System.out.println("From DA:" + rr.getBank_id());
 
 				java.util.Date date = new java.util.Date();
 
@@ -78,23 +80,21 @@ public class Emp_Login_DaoImpl extends HibernateUtil implements
 
 				session.save(rr);
 				session.getTransaction().commit();
-				
+
 				session = HibernateUtil.getSessionFactory().getCurrentSession();
 				session.beginTransaction();
-				String SQL_QUERY1 = "SELECT depo.created FROM Emp_LoginMan depo WHERE depo.bank_id ='"
-						+ bank_id + "' ORDER BY depo.id DESC";
+				String SQL_QUERY1 = "SELECT depo.created FROM Emp_LoginMan depo WHERE depo.bank_id =:bank_id "
+						+ " ORDER BY depo.id DESC";
 				Query query1 = session.createQuery(SQL_QUERY1);
+				query1.setParameter("bank_id", bank_id);
 
 				@SuppressWarnings("rawtypes")
 				List results = query1.list();
-				try
-				{
-				String se = results.get(1).toString();
-				usersession.put("user2", se);
-				}
-				catch(Exception e)
-				{
-					System.out.println(e.getMessage());
+				try {
+					String se = results.get(1).toString();
+					usersession.put("user2", se);
+				} catch (Exception e) {
+					logger.error("Error:" + e);
 				}
 
 			} else {
@@ -103,7 +103,7 @@ public class Emp_Login_DaoImpl extends HibernateUtil implements
 
 		} catch (HibernateException e) {
 
-			System.out.println(e.getMessage());
+			logger.error("Error:" + e);
 			session.getTransaction().rollback();
 
 		}
@@ -123,26 +123,27 @@ public class Emp_Login_DaoImpl extends HibernateUtil implements
 
 		String abcd = (String) usersession.get("user1");
 
-		System.out.println("From DAOIMPL Class:" + abcd);
+		logger.debug("From DAOIMPL Class:" + abcd);
 
 		String test = null;
 		test = chpw.getOldpw();
-		test =md5(test);
+		test = md5(test);
 		String test2 = null;
 		test2 = chpw.getNewpw();
-		test2 =md5(test2);
+		test2 = md5(test2);
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		session.beginTransaction();
 
-		String SQL_QUERY = "SELECT chpw.password FROM Emp_Login chpw WHERE chpw.bank_id ='"
-				+ abcd + "' AND chpw.password='" + test + "' ";
+		String SQL_QUERY = "SELECT chpw.password FROM Emp_Login chpw WHERE chpw.bank_id =:bank_id"
+				+ " AND chpw.password=:password ";
 		try {
 			Query query = session.createQuery(SQL_QUERY);
+			query.setParameter("bank_id", abcd);
+			query.setParameter("password", test);
 			@SuppressWarnings("rawtypes")
 			List results = query.list();
 			String f_amount = (String) results.get(0);
-			System.out.println(f_amount);
 
 			if (f_amount != null) {
 
@@ -153,14 +154,14 @@ public class Emp_Login_DaoImpl extends HibernateUtil implements
 				query2.setParameter("password", test2);
 				query2.setParameter("abcd", abcd);
 				int result = query2.executeUpdate();
-				System.out.println("Rows affected: " + result);
+				logger.debug("Rows affected: " + result);
 
 			} else {
 				chpw.setTest("not");
 			}
 		} catch (Exception e) {
 			chpw.setTest("not");
-			System.out.println(e.getMessage());
+			logger.error("Error:" + e);
 		}
 
 		session.getTransaction().commit();

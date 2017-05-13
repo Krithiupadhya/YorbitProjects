@@ -2,21 +2,22 @@ package actionClass;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.struts2.interceptor.SessionAware;
-
-import actionForm.Client_Login;
-import daoImpl.Client_Login_DaoImpl;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 
-public class Client_Login_Action extends ActionSupport implements
-		ModelDriven<Object>, SessionAware {
+import actionForm.Client_Login;
+import daoImpl.Client_Login_DaoImpl;
+
+public class Client_Login_Action extends ActionSupport implements ModelDriven<Object>, SessionAware {
 
 	private Map<String, Object> session;
 
 	private static final long serialVersionUID = -8971757688097732500L;
+	private static Logger logger = Logger.getLogger(Client_Login_Action.class);
 
 	private Client_Login login = null;
 	private Client_Login chpw;
@@ -32,8 +33,7 @@ public class Client_Login_Action extends ActionSupport implements
 
 	public String checkLogin() {
 
-		if (login.getUserName().equals("") || login.getPassword().equals("")
-				|| login.getBank_id().equals("")) {
+		if (login.getUserName().equals("") || login.getPassword().equals("") || login.getBank_id().equals("")) {
 			addActionError("Please enter all values");
 
 			return ERROR;
@@ -44,15 +44,13 @@ public class Client_Login_Action extends ActionSupport implements
 
 			if (null != login.getBank_id()) {
 
-				String abcd = login.getUserName();
 				String other = login.getBank_id();
-				String uname =login.getUserName();
-				System.out.println(abcd);
+				String uname = login.getUserName();
 
 				session.put("user", "client");
 				session.put("user0", uname);
 				session.put("user1", other);
-				
+
 				return SUCCESS;
 
 			} else {
@@ -73,45 +71,35 @@ public class Client_Login_Action extends ActionSupport implements
 		String a = chpw.getOldpw();
 		String b = chpw.getNewpw();
 		String c = chpw.getCnewpw();
-		if(a.equals("") || b.equals("") ||c.equals(""))
-		{
+		if (a.equals("") || b.equals("") || c.equals("")) {
 			addActionError("Please Enter All Values");
 			return ERROR;
-		}
-		else
-		{
-		System.out.println(a);
-		System.out.println(b);
-		System.out.println(c);
+		} else {
 
-		if (b.equals(c)) 
-		{
+			if (b.equals(c)) {
 
-			xyz.changepw(chpw);
+				xyz.changepw(chpw);
 
-			String ss = chpw.getTest();
+				String ss = chpw.getTest();
 
-			System.out.println("From Action Class:  " + ss);
-			if (chpw.getTest() == "not") 
-			{
-				addActionError("Old Password not matching ");
+				logger.debug("From Action Class:  " + ss);
+				if ("not".equals(chpw.getTest())) {
+					addActionError("Old Password not matching");
+					return ERROR;
+
+				}
+				if ("good".equals(chpw.getTest())) {
+					addActionMessage("Password changed Successfully. Account will be Logout");
+				}
+
+			} else {
+				addActionError("Password not matching");
 				return ERROR;
-
 			}
-			if(chpw.getTest() == "good")
-			{
-				addActionMessage("Password changed Successfully. Account will be Logout");		
-			}
-
-		} 
-		else 
-		{
-			addActionError("Password not matching");
-			return ERROR;
+			return SUCCESS;
 		}
-		return SUCCESS;
 	}
-	}
+
 	public String logout() throws Exception {
 
 		Map<String, Object> session = ActionContext.getContext().getSession();
@@ -153,7 +141,6 @@ public class Client_Login_Action extends ActionSupport implements
 
 	}
 
-	
 	public void setLogin(Client_Login login) {
 
 		this.login = login;
@@ -164,5 +151,12 @@ public class Client_Login_Action extends ActionSupport implements
 		this.session = session;
 	}
 
+	public Client_Login_DaoImpl getXyz() {
+		return xyz;
+	}
+
+	public void setXyz(Client_Login_DaoImpl xyz) {
+		this.xyz = xyz;
+	}
 
 }

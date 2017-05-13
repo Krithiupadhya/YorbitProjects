@@ -1,8 +1,10 @@
 package actionClass;
 
-import actionForm.Admin_ClientChPW;
+import org.apache.log4j.Logger;
+
 import com.opensymphony.xwork2.ActionSupport;
 
+import actionForm.Admin_ClientChPW;
 import daoImpl.Admin_ClientChPW_DaoImpl;
 
 public class Admin_ClientChPW_Action extends ActionSupport {
@@ -10,7 +12,8 @@ public class Admin_ClientChPW_Action extends ActionSupport {
 	private static final long serialVersionUID = -7556338012932718768L;
 	private Admin_ClientChPW chpw;
 	private Admin_ClientChPW_DaoImpl xyz = new Admin_ClientChPW_DaoImpl();
-
+	private static Logger logger= Logger.getLogger(Admin_ClientChPW_Action.class);
+	
 	/**
 	 * @return Admin Change client passowrd
 	 */
@@ -28,7 +31,7 @@ public class Admin_ClientChPW_Action extends ActionSupport {
 		{
 		if (a.equals(b)) {
 			String sa = chpw.getBank_id();
-			System.out.println("From Action" + sa);
+			logger.debug("From Action" + sa);
 			xyz.changepw(chpw);
 			addActionMessage("You have changed Successfully password of Client:"+c);
 			return SUCCESS;

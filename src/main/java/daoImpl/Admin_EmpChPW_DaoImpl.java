@@ -1,5 +1,6 @@
 package daoImpl;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.classic.Session;
@@ -11,6 +12,12 @@ import util.HibernateUtil;
  * @author VS60001724
  */
 public class Admin_EmpChPW_DaoImpl extends HibernateUtil {
+
+	private static Logger logger= Logger.getLogger(Admin_EmpChPW_DaoImpl.class);
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2562718248934914287L;
 
 	/**
 	 * @param chpw
@@ -32,14 +39,11 @@ public class Admin_EmpChPW_DaoImpl extends HibernateUtil {
 			query2.setParameter("password", newpw);
 			query2.setParameter("bank_id", bank_id);
 			int result = query2.executeUpdate();
-			System.out.println("Rows affected: " + result);
+			logger.debug("Rows affected: " + result);
 		} catch (HibernateException e) {
-			e.printStackTrace();
+			logger.error("Error while changing password of employee:"+e);
 			session.getTransaction().rollback();
 		}
-
-		System.out.println(bank_id);
-		System.out.println(newpw);
 
 		session.getTransaction().commit();
 		return chpw;

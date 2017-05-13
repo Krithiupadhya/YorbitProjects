@@ -1,0 +1,5 @@
+projectKey=com.mindtree:OurBank
+serverUrl=http://localhost:9000
+dashboardUrl=http://localhost:9000/dashboard/index/com.mindtree:OurBank
+ceTaskId=AVwBIgJle4_oXdGqWOQU
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AVwBIgJle4_oXdGqWOQU

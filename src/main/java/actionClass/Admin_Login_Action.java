@@ -2,18 +2,17 @@ package actionClass;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.apache.struts2.interceptor.SessionAware;
-
-import actionForm.Admin_Login;
-
-import daoImpl.Admin_Login_DaoImpl;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 
-public class Admin_Login_Action extends ActionSupport implements ModelDriven<Object>,
-		SessionAware {
+import actionForm.Admin_Login;
+import daoImpl.Admin_Login_DaoImpl;
+
+public class Admin_Login_Action extends ActionSupport implements ModelDriven<Object>, SessionAware {
 
 	private Map<String, Object> session;
 
@@ -22,9 +21,10 @@ public class Admin_Login_Action extends ActionSupport implements ModelDriven<Obj
 	}
 
 	private static final long serialVersionUID = -8971757688097732500L;
+	private static Logger logger = Logger.getLogger(Admin_Login_Action.class);
 	private Admin_Login login = null;
 	private Admin_Login chpw;
-	
+
 	private Admin_Login_DaoImpl loginDAO = new Admin_Login_DaoImpl();
 	private Admin_Login_DaoImpl xyz = new Admin_Login_DaoImpl();
 
@@ -54,10 +54,7 @@ public class Admin_Login_Action extends ActionSupport implements ModelDriven<Obj
 				session.put("user", "admin");
 				session.put("user0", uname);
 				session.put("user1", other);
-				
-				
-				
-				
+
 				return SUCCESS;
 
 			} else {
@@ -71,50 +68,40 @@ public class Admin_Login_Action extends ActionSupport implements ModelDriven<Obj
 		}
 
 	}
+
 	public String changepw()
 
 	{
 		String a = chpw.getOldpw();
 		String b = chpw.getNewpw();
 		String c = chpw.getCnewpw();
-		if(a.equals("") || b.equals("") ||c.equals(""))
-		{
+		if (a.equals("") || b.equals("") || c.equals("")) {
 			addActionError("Please Enter All Values");
 			return ERROR;
-		}
-		else
-		{
-		System.out.println(a);
-		System.out.println(b);
-		System.out.println(c);
+		} else {
 
-		if (b.equals(c)) 
-		{
+			if (b.equals(c)) {
 
-			xyz.changepw(chpw);
+				xyz.changepw(chpw);
 
-			String ss = chpw.getTest();
+				String ss = chpw.getTest();
 
-			System.out.println("From Action Class:  " + ss);
-			if (chpw.getTest() == "not") 
-			{
-				addActionError("Old Password not matching ");
+				logger.debug("From Action Class:  " + ss);
+				if ("not".equals(chpw.getTest()) ) {
+					addActionError("Old Password not matching ");
+					return ERROR;
+
+				}
+				if ( "good".equals(chpw.getTest())) {
+					addActionError("Password changed Successfully. Account will be Logout");
+				}
+
+			} else {
+				addActionError("Password not matching");
 				return ERROR;
-
 			}
-			if(chpw.getTest() == "good")
-			{
-		addActionError("Password changed Successfully. Account will be Logout");		
-			}
-
-		} 
-		else 
-		{
-			addActionError("Password not matching");
-			return ERROR;
+			return SUCCESS;
 		}
-		return SUCCESS;
-	}
 	}
 
 	public String logout() throws Exception {
@@ -127,7 +114,6 @@ public class Admin_Login_Action extends ActionSupport implements ModelDriven<Obj
 		return SUCCESS;
 	}
 
-	
 	public Admin_Login getChpw() {
 		return chpw;
 	}
@@ -166,12 +152,10 @@ public class Admin_Login_Action extends ActionSupport implements ModelDriven<Obj
 
 	}
 
-	
 	public void setLogin(Admin_Login login) {
 
 		this.login = login;
 
 	}
-
 
 }
